@@ -1,0 +1,3 @@
+[submodule "3rdparty/re-flex"]
+	path = 3rdparty/re-flex
+	url = https://github.com/Genivia/RE-flex.git

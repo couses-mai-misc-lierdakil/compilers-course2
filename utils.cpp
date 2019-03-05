@@ -5,7 +5,6 @@
 using converter = std::wstring_convert<std::codecvt_utf8<wchar_t>,wchar_t>;
 static converter conv;
 
-std::runtime_error runtime_error(std::wstring what)
-{
-    return std::runtime_error(conv.to_bytes(what));
+std::string wstr_to_str(std::wstring s) {
+  return conv.to_bytes(s);
 }

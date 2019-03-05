@@ -1,2 +1,5 @@
 clang++
 -std=c++17
+-I3rdparty/re-flex/include
+-Ibuild
+-I.

@@ -1,13 +1,7 @@
 #include <iostream>
-#include "lexer.h"
-#include "parser.h"
-
-/* Notable changes:
- * - Lexer EOF handling
- * - Grammar
- * - Reset lexer on newline
- * - Wstring
- */
+#include <sstream>
+#include "driver.h"
+#include "parser.tab.hh"
 
 int main()
 {
@@ -16,16 +10,18 @@ int main()
     std::wcin.imbue(std::locale());
     std::wcout.imbue(std::locale());
     std::wcerr.imbue(std::locale());
-    Lexer lexer(std::wcin);
-    Parser parser(lexer);
-    for (;;) {
-        try {
-            auto result = parser.parse();
-            std::wcout << "Result: " << result << std::endl;
-        } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            if (std::wcin.eof()) break;
-        }
+    std::wstring line;
+    while (!std::getline(std::wcin, line).eof()) {
+      Driver drv(line);
+      drv.result = 0;
+      yy::parser parser(drv);
+      // parser.set_debug_level(true);
+      auto res = parser.parse();
+      if (res != 0) {
+        std::wcerr << L"Parser returned error " << res << std::endl;
+      } else {
+        std::wcout << "Result is: " << drv.result << std::endl;
+      }
     }
     return 0;
 }

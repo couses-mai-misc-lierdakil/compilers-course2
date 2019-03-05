@@ -1,8 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <stdexcept>
+#include <string>
 
-std::runtime_error runtime_error(std::wstring what);
+std::string wstr_to_str(std::wstring s);
 
 #endif // UTILS_H
