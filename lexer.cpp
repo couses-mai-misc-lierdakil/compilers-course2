@@ -1,8 +1,6 @@
 #include <string>
-#include "lexer.h"
-#include "token.h"
 #include "utils.h"
-#include <locale>
+#include "lexer.h"
 
 /* Lexer based on DFA; transition table is:
  * (0,[*+/-]) = 1

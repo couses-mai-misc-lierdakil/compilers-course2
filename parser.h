@@ -2,9 +2,9 @@
 #define PARSER_H
 
 #include <map>
-#include <memory>
 #include "token.h"
-#include "lexer.h"
+
+class Lexer;
 
 class Parser {
 public:

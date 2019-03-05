@@ -1,10 +1,5 @@
 #include <iostream>
-#include <list>
-#include <string>
 #include "lexer.h"
-#include "token.h"
-#include <map>
-#include <cmath>
 #include "parser.h"
 
 /* Notable changes:

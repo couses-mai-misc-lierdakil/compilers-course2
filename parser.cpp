@@ -1,12 +1,7 @@
 #include <cmath>
-#include <iostream>
-#include <sstream>
-#include <locale>
-#include <codecvt>
-#include "parser.h"
-#include "token.h"
-#include "lexer.h"
 #include "utils.h"
+#include "parser.h"
+#include "lexer.h"
 
 /* Grammar:
  * E -> T E'
@@ -93,5 +88,4 @@ double Parser::parseE() {
 void Parser::nextTok()
 {
     currentTok = l.getNextToken();
-    std::wcerr << "Parser read token " << currentTok.value() << std::endl;
 }

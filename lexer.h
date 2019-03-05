@@ -1,9 +1,8 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include <list>
 #include <istream>
-#include <memory>
+#include <list>
 #include "token.h"
 
 class Lexer
