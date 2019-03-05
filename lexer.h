@@ -4,14 +4,13 @@
 #include <list>
 #include <istream>
 #include <memory>
-
-class Token;
+#include "token.h"
 
 class Lexer
 {
 public:
     Lexer(std::wistream& inputStream);
-    std::unique_ptr<Token> getNextToken();
+    Tok::Token getNextToken();
 private:
     std::list<wchar_t> ret_buf;
     std::wistream& inputStream;

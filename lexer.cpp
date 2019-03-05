@@ -51,7 +51,7 @@ wint_t Lexer::getNextChar() {
     }
 }
 
-std::unique_ptr<Token> Lexer::getNextToken()
+Tok::Token Lexer::getNextToken()
 {
     int state = 0;
     wint_t curch_;
@@ -71,15 +71,15 @@ std::unique_ptr<Token> Lexer::getNextToken()
             ret_buf.splice(ret_buf.begin(), buf);
             if (la_state == 1) {
                 std::wstring op(acc_buf.begin(), acc_buf.end());
-                return std::make_unique<TokenOp>(op[0]);
+                return Tok::Op{op[0]};
             } else if (la_state == 2) {
                 std::wstring var(acc_buf.begin(), acc_buf.end());
-                return std::make_unique<TokenVar>(var);
+                return Tok::Var{var};
             } else if (la_state == 3 || la_state == 4) {
                 std::wstring num(acc_buf.begin(), acc_buf.end());
-                return std::make_unique<TokenNum>(std::stod(num));
+                return Tok::Num{std::stod(num)};
             } else if (la_state == 5) {
-                return std::make_unique<TokenEof>();
+                return Tok::Eof{};
             } else {
                 // there was no accepted state
                 getNextChar();

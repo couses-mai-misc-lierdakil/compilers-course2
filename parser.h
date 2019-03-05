@@ -4,8 +4,7 @@
 #include <map>
 #include <memory>
 #include "token.h"
-
-class Lexer;
+#include "lexer.h"
 
 class Parser {
 public:
@@ -14,7 +13,7 @@ public:
 
 private:
     Lexer &l;
-    std::unique_ptr<Token> currentTok;
+    std::optional<Tok::Token> currentTok;
     std::map<std::wstring, double> symtable;
 
     double parseV();
@@ -25,8 +24,8 @@ private:
     double parseE();
 
     void nextTok();
-    template<TokenType tt>
-    auto curTokVal() { return getToken<tt>(currentTok); }
+    template<typename T>
+    auto curTokVal() { return Tok::getValue<T>(currentTok.value()); }
 };
 
 

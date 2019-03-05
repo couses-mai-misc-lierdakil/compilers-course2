@@ -1,38 +1,23 @@
 #include "token.h"
 #include <sstream>
+#include <type_traits>
 
-Token::Token(TokenType type): type(type) {}
+namespace Tok {
 
-Token::~Token() {}
-
-TokenNum::TokenNum(double value): Token(TokenType::Num), value(value) {}
-
-std::wstring TokenNum::toString() {
-    std::wstringstream str;
-    str << "Token Number value = " << value;
-    return str.str();
+std::wstring toString(const Token &tok) {
+    return std::visit([](const auto& v) {
+        std::wstringstream s;
+        s << "Token " << v.name;
+        if constexpr(!std::is_same_v<decltype(v.value), std::monostate>) {
+            s << " with value " << v.value;
+        }
+        return s.str();
+    }, tok);
 }
 
-TokenVar::TokenVar(std::wstring name) : Token(TokenType::Var), value(name) {}
-
-std::wstring TokenVar::toString() {
-    std::wstringstream str;
-    str << L"Token Variable name = " << value;
-    return str.str();
+std::wostream &operator<<(std::wostream &s, const Token &tok)
+{
+    return s << toString(tok);
 }
 
-TokenOp::TokenOp(wchar_t op) : Token(TokenType::Op), value(op) {}
-
-std::wstring TokenOp::toString() {
-    std::wstringstream str;
-    str << "Token Operator type = " << value;
-    return str.str();
-}
-
-TokenEof::TokenEof() : Token(TokenType::Eof), value(EOF) {}
-
-std::wstring TokenEof::toString() {
-    std::wstringstream str;
-    str << L"Token EOF";
-    return str.str();
 }

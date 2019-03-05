@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <sstream>
 #include <locale>
 #include <codecvt>
@@ -18,6 +19,7 @@
 
 Parser::Parser(Lexer &lexer) : l(lexer) {
     symtable[L"pi"] = M_PI;
+    symtable[L"π"] = M_PI;
 }
 
 double Parser::parse()
@@ -28,21 +30,25 @@ double Parser::parse()
 
 double Parser::parseV() {
     double val;
-    if (auto tv = curTokVal<TokenType::Num>()) {
+    if (auto tv = curTokVal<Tok::Num>()) {
         val = tv.value();
-    } else if (auto tv = curTokVal<TokenType::Var>()) {
-        val = symtable.at(tv.value());
+    } else if (auto tv = curTokVal<Tok::Var>()) {
+        try {
+            val = symtable.at(tv.value());
+        } catch(std::out_of_range&) {
+            throw runtime_error(L"Undefined variable " + tv.value());
+        }
     } else {
         throw runtime_error(
                     L"error in V: expected Num or Var, got "
-                    +currentTok->toString());
+                    +Tok::toString(currentTok.value()));
     }
     nextTok();
     return val;
 }
 
 double Parser::parseF() {
-    if (curTokVal<TokenType::Op>() == '-') {
+    if (curTokVal<Tok::Op>() == '-') {
         nextTok();
         return -parseV();
     } else {
@@ -51,10 +57,10 @@ double Parser::parseF() {
 }
 
 double Parser::parseTprime(double op1val) {
-    if(curTokVal<TokenType::Op>() == '*') {
+    if(curTokVal<Tok::Op>() == '*') {
         nextTok();
         return parseTprime(op1val*parseF());
-    } else if(curTokVal<TokenType::Op>() == '/') {
+    } else if(curTokVal<Tok::Op>() == '/') {
         nextTok();
         return parseTprime(op1val/parseF());
     } else {
@@ -68,10 +74,10 @@ double Parser::parseT() {
 }
 
 double Parser::parseEprime(double op1val) {
-    if(curTokVal<TokenType::Op>() == '+') {
+    if(curTokVal<Tok::Op>() == '+') {
         nextTok();
         return parseEprime(op1val + parseT());
-    } else if(curTokVal<TokenType::Op>() == '-') {
+    } else if(curTokVal<Tok::Op>() == '-') {
         nextTok();
         return parseEprime(op1val-parseT());
     } else {
@@ -87,4 +93,5 @@ double Parser::parseE() {
 void Parser::nextTok()
 {
     currentTok = l.getNextToken();
+    std::wcerr << "Parser read token " << currentTok.value() << std::endl;
 }
