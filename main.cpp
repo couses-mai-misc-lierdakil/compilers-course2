@@ -20,12 +20,13 @@ int main()
     std::locale::global(std::locale("en_US.UTF8"));
     std::wcin.imbue(std::locale());
     std::wcout.imbue(std::locale());
+    std::wcerr.imbue(std::locale());
     Lexer lexer(std::wcin);
     Parser parser(lexer);
     for (;;) {
         try {
             auto result = parser.parse();
-            std::wcout << L"Результат: " << result << std::endl;
+            std::wcout << "Result: " << result << std::endl;
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
             if (std::wcin.eof()) break;
