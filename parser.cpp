@@ -5,9 +5,9 @@
 
 /* Grammar:
  * E -> T E'
- * E' -> + T E' | - T E' | eps
+ * E' -> + T E' | - T E' | ε
  * T -> F T'
- * T' -> * F T' | / F T' | eps
+ * T' -> * F T' | / F T' | ε
  * F -> V | - V
  * V -> num | var
  */

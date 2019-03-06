@@ -34,7 +34,7 @@ static int dtable(int s, wint_t c) {
     else if (s == 3 && std::isdigit(ch, std::locale())) return 3;
     else if (s == 3 && c == '.') return 4;
     else if (s == 4 && std::isdigit(ch, std::locale())) return 4;
-    else if (s == 0 && (c == WEOF || ch == '\n')) return 5;
+    else if (s == 0 && c == WEOF) return 5;
     else if (s == 0 && std::isspace(ch, std::locale())) return 0;
     else return -1;
 }
@@ -65,7 +65,7 @@ Tok::Token Lexer::getNextToken()
             la_state = state;
             acc_buf.splice(acc_buf.end(), buf);
         }
-        if (state == -1 || state == 5) {
+        if (state == -1) {
             ret_buf.splice(ret_buf.begin(), buf);
             if (la_state == 1) {
                 std::wstring op(acc_buf.begin(), acc_buf.end());

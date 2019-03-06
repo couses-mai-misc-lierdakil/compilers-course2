@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "lexer.h"
 #include "parser.h"
 
@@ -16,16 +17,18 @@ int main()
     std::wcin.imbue(std::locale());
     std::wcout.imbue(std::locale());
     std::wcerr.imbue(std::locale());
-    Lexer lexer(std::wcin);
-    Parser parser(lexer);
-    for (;;) {
-        try {
-            auto result = parser.parse();
-            std::wcout << "Result: " << result << std::endl;
-        } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
-            if (std::wcin.eof()) break;
-        }
+    std::wstring line;
+    while (!std::getline(std::wcin, line).eof()) {
+      std::wstringstream ss(line);
+      Lexer lexer(ss);
+      Parser parser(lexer);
+      try {
+        auto result = parser.parse();
+        std::wcout << "Result: " << result << std::endl;
+      } catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        if (std::wcin.eof()) break;
+      }
     }
     return 0;
 }
