@@ -1,4 +1,4 @@
-%require  "3.3"
+%require  "3.2"
 %language "c++"
 %define api.value.type variant
 %code requires {
