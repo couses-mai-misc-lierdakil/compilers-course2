@@ -6,9 +6,9 @@ find_package(BISON)
 
 ADD_CUSTOM_COMMAND(OUTPUT lex.yy.cpp
 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/re-flex/bin/reflex --header-file ${CMAKE_CURRENT_SOURCE_DIR}/lexer.l
-DEPENDS lexer.l)
+DEPENDS lexer.l parser.tab.cc)
 ADD_CUSTOM_COMMAND(OUTPUT parser.tab.cc
-COMMAND ${BISON_EXECUTABLE} -d ${CMAKE_CURRENT_SOURCE_DIR}/parser.y
+COMMAND ${BISON_EXECUTABLE} -v -d ${CMAKE_CURRENT_SOURCE_DIR}/parser.y
 DEPENDS parser.y)
 
 

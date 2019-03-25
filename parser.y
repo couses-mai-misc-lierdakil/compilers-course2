@@ -17,11 +17,15 @@
 %define parse.trace
 %define parse.error verbose
 %parse-param { Driver& drv }
+
 %type <double> exp
 %type <double> val
 %token <std::wstring> Num "number"
 %token <std::wstring> Var "identifier"
-%token '(' ')' '+' '-' '*' '/'
+%token '(' ')' '+' '-' '*' '/' '=' ';'
+
+%left ';'
+%right '='
 %left '+' '-'
 %left '*' '/'
 %precedence UNEG
@@ -37,6 +41,7 @@ exp:
 | '(' exp ')'           { $$ = $2; }
 | '-' exp %prec UNEG    { $$ = -$2; }
 | val                   { $$ = $1; }
+| Var '=' exp           { drv.symtable[$1] = $3; $$ = $3; }
 ;
 
 val:
