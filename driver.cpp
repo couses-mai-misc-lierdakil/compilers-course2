@@ -119,3 +119,9 @@ void Driver::cleanSynTree(const Node *x) {
     itemsToErase.pop();
   }
 }
+
+void Driver::printMemStat() {
+  std::wcerr << "Number of variables: " << st.symtable.size() << "\n"
+             << "Number of functions: " << st.funtable.size() << "\n"
+             << "Syntax nodes stored: " << st.syntree.size() << std::endl;
+}

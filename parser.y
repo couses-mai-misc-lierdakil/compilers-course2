@@ -25,6 +25,7 @@
 %token <std::wstring> Num "number"
 %token <std::wstring> Var "identifier"
 %token Def "def"
+%token Memstat "MEMSTAT"
 %token '(' ')' '+' '-' '*' '/' '=' ';'
 
 %left ';'
@@ -41,6 +42,7 @@ stmt:
   Def Var '(' args ')' '=' exp
                         { drv.st.funtable.emplace($2, Function{$4, $7}); }
 | Var '=' exp           { drv.st.symtable[$1] = drv.compute($3); }
+| Memstat               { drv.printMemStat(); }
 
 args:
   Var                   { $$ = Function::arglist_t({$1}); }

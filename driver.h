@@ -29,6 +29,7 @@ public:
   compute(const Node *x,
           std::optional<const DriverState::symt_t *> symtable = std::nullopt);
   void cleanSynTree(const Node *x);
+  void printMemStat();
   DriverState &st;
   std::optional<double> result = std::nullopt;
 };
