@@ -1,6 +1,7 @@
 #include "driver.h"
 #include "utils.h"
 #include <optional>
+#include <queue>
 
 const Node *Driver::createValNode(double val) {
   auto node = st.syntree.emplace(NodeVal{val});
@@ -107,13 +108,14 @@ void Driver::cleanSynTree(const Node *x) {
     std::visit(RecTreeVis{roots}, *i.second.body);
   }
 
-  std::list<const SynTree::value_type *> itemsToErase;
+  std::queue<const SynTree::value_type *> itemsToErase;
   for (auto &i : st.syntree) {
     if (roots.find(&i) == roots.end()) {
-      itemsToErase.push_back(&i);
+      itemsToErase.push(&i);
     }
   }
-  for (auto &i : itemsToErase) {
-    st.syntree.erase(*i);
+  while (!itemsToErase.empty()) {
+    st.syntree.erase(*itemsToErase.front());
+    itemsToErase.pop();
   }
 }

@@ -1,6 +1,5 @@
 #include "driver.h"
 #include "parser.tab.hh"
-#include <clocale>
 #include <iostream>
 #include <sstream>
 
