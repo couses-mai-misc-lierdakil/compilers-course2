@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 #include <clocale>
-#include "syntree.h"
 #include "driver.h"
 #include "parser.tab.hh"
 
