@@ -10,6 +10,7 @@ num     [0-9]+([.][0-9]*)?([eE][+-]?[0-9]+)?
 
 %%
 
+def      return parser::token::Def;
 {num}    yylval.emplace<std::wstring>(wstr()); return parser::token::Num;
 {ident}  yylval.emplace<std::wstring>(wstr()); return parser::token::Var;
 [()+*/=\-] return chr();
