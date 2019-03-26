@@ -79,9 +79,8 @@ double Driver::compute(const Node *x,
 }
 
 struct RecTreeVis {
-  std::unordered_set<const SynTree::value_type*>& roots;
-  template<typename U>
-  void operator()(U&& arg) {
+  std::unordered_set<const SynTree::value_type *> &roots;
+  template <typename U> void operator()(U &&arg) {
     auto rec = RecTreeVis{roots};
     using T = std::decay_t<decltype(arg)>;
     if constexpr (std::is_same_v<NodeExp, T>) {
@@ -102,13 +101,13 @@ struct RecTreeVis {
 };
 
 void Driver::cleanSynTree(const Node *x) {
-  std::unordered_set<const SynTree::value_type*> roots;
+  std::unordered_set<const SynTree::value_type *> roots;
   for (auto &i : st.funtable) {
     roots.insert(i.second.body);
     std::visit(RecTreeVis{roots}, *i.second.body);
   }
 
-  std::list<const SynTree::value_type*> itemsToErase;
+  std::list<const SynTree::value_type *> itemsToErase;
   for (auto &i : st.syntree) {
     if (roots.find(&i) == roots.end()) {
       itemsToErase.push_back(&i);
