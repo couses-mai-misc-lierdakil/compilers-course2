@@ -1,4 +1,5 @@
 #include "syntree.h"
+#include "utils.h"
 
 bool operator==(const NodeFunCall& a, const NodeFunCall& b){
  return a.name == b.name && a.args == b.args;
@@ -47,23 +48,29 @@ std::size_t hash_combine_calc(const Ts& ... args) {
   return hash_combine(myhash(args)...);
 }
 
+template <typename _Tp, typename _Up>
+  inline constexpr bool is_t = std::is_same<_Tp, _Up>::value;
+
 std::size_t computeNodeHash(const Node &x)
 {
-    if (auto exp = std::get_if<NodeExp>(&x)) {
-        return hash_combine_calc(exp->opType, exp->op1, exp->op2);
-    } else if (auto val = std::get_if<NodeVal>(&x)) {
-        return hash_combine_calc(val->value);
-    } else if (auto var = std::get_if<NodeVar>(&x)) {
-        return hash_combine_calc(var->name);
-    } else if (auto var = std::get_if<NodeUn>(&x)) {
-        return hash_combine_calc(var->opType, var->op1);
-    } else if (auto funcall = std::get_if<NodeFunCall>(&x)) {
-        auto h = hash_combine_calc(funcall->name);
-        for (auto const &i : funcall->args) {
-            h = hash_combine(h, myhash(i));
-        }
-        return h;
+  return std::visit([](auto&& arg) {
+    using T = std::decay_t<decltype(arg)>;
+    if constexpr (is_t<NodeExp, T>) {
+      return hash_combine_calc(arg.opType, arg.op1, arg.op2);
+    } else if constexpr (is_t<NodeVal, T>) {
+      return hash_combine_calc(arg.value);
+    } else if constexpr (is_t<NodeVar, T>) {
+      return hash_combine_calc(arg.name);
+    } else if constexpr (is_t<NodeUn, T>) {
+      return hash_combine_calc(arg.opType, arg.op1);
+    } else if constexpr (is_t<NodeFunCall, T>) {
+      auto h = hash_combine_calc(arg.name);
+      for (auto const &i : arg.args) {
+        h = hash_combine(h, myhash(i));
+      }
+      return h;
     } else {
-        throw std::runtime_error("Unknown node type in hash");
+      static_assert(always_false<T>, "Unknown node type in hash");
     }
+  }, x);
 }
