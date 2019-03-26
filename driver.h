@@ -4,15 +4,20 @@
 #include "lex.yy.h"
 #include <type_traits>
 
+struct DriverState {
+  using symt_t = std::map<std::wstring, double>;
+  using funt_t = std::map<std::wstring, Function>;
+  symt_t symtable;
+  funt_t funtable;
+  SynTree syntree;
+};
+
 class Driver : public yy::Lexer {
 public:
   using Lexer::Lexer;
-  using symt_t = std::map<std::wstring, double>;
-  using funt_t = std::map<std::wstring, Function>;
   template <typename... Args>
-  Driver(symt_t &symtable, funt_t &funtable, SynTree &syntree, Args &&... args)
-      : Lexer(std::forward<Args>(args)...), symtable(symtable),
-        funtable(funtable), syntree(syntree) {}
+  Driver(DriverState &st, Args &&... args)
+      : Lexer(std::forward<Args>(args)...), st(st) {}
   const Node *createValNode(double val);
   const Node *createVarNode(std::wstring name);
   const Node *createExpNode(NodeExp::OpType opType, const Node *op1,
@@ -20,11 +25,11 @@ public:
   const Node *createUnNode(NodeUn::OpType opType, const Node *op1);
   const Node *createFunCallNode(std::wstring name,
                                 std::list<const Node *> args);
-  double compute(const Node *x);
+  double
+  compute(const Node *x,
+          std::optional<const DriverState::symt_t *> symtable = std::nullopt);
   std::list<SynTree::node_type> cleanSynTree(const Node *x);
-  symt_t &symtable;
-  funt_t &funtable;
-  SynTree &syntree;
+  DriverState &st;
   double result;
 };
 

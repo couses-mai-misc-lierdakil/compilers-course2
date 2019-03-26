@@ -39,8 +39,8 @@ s: exp                  { drv.result = drv.compute($1); drv.cleanSynTree($1); }
 
 stmt:
   Def Var '(' args ')' '=' exp
-                        { drv.funtable.emplace($2, Function{$4, $7}); }
-| Var '=' exp           { drv.symtable[$1] = drv.compute($3); }
+                        { drv.st.funtable.emplace($2, Function{$4, $7}); }
+| Var '=' exp           { drv.st.symtable[$1] = drv.compute($3); }
 
 args:
   Var                   { $$ = Function::arglist_t({$1}); }
