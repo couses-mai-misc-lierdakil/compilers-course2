@@ -34,13 +34,13 @@
 %precedence UNEG
 %%
 %start s;
-s: exp                  { drv.result = drv.compute(*$1); drv.cleanSynTree(*$1); }
+s: exp                  { drv.result = drv.compute($1); drv.cleanSynTree($1); }
 |  stmt
 
 stmt:
   Def Var '(' args ')' '=' exp
-                        { drv.funtable.emplace($2, Function{$4, *$7}); }
-| Var '=' exp           { drv.symtable[$1] = drv.compute(*$3); }
+                        { drv.funtable.emplace($2, Function{$4, $7}); }
+| Var '=' exp           { drv.symtable[$1] = drv.compute($3); }
 
 args:
   Var                   { $$ = Function::arglist_t({$1}); }
@@ -48,19 +48,19 @@ args:
 ;
 
 exp:
-  exp '+' exp           { $$ = & drv.createExpNode(NodeExp::OpType::Add, *$1, *$3); }
-| exp '-' exp           { $$ = & drv.createExpNode(NodeExp::OpType::Sub, *$1, *$3); }
-| exp '*' exp           { $$ = & drv.createExpNode(NodeExp::OpType::Mul, *$1, *$3); }
-| exp '/' exp           { $$ = & drv.createExpNode(NodeExp::OpType::Div, *$1, *$3); }
+  exp '+' exp           { $$ = drv.createExpNode(NodeExp::OpType::Add, $1, $3); }
+| exp '-' exp           { $$ = drv.createExpNode(NodeExp::OpType::Sub, $1, $3); }
+| exp '*' exp           { $$ = drv.createExpNode(NodeExp::OpType::Mul, $1, $3); }
+| exp '/' exp           { $$ = drv.createExpNode(NodeExp::OpType::Div, $1, $3); }
 | '(' exp ')'           { $$ = $2; }
-| '-' exp %prec UNEG    { $$ = & drv.createUnNode(NodeUn::OpType::Neg, *$2); }
+| '-' exp %prec UNEG    { $$ = drv.createUnNode(NodeUn::OpType::Neg, $2); }
 | val                   { $$ = $1; }
 ;
 
 val:
-  Var { $$ = & drv.createVarNode($1); }
-| Num { $$ = & drv.createValNode(std::stod($1)); }
-| Var '(' callargs ')' { $$ = & drv.createFunCallNode($1, $3); }
+  Var { $$ = drv.createVarNode($1); }
+| Num { $$ = drv.createValNode(std::stod($1)); }
+| Var '(' callargs ')' { $$ = drv.createFunCallNode($1, $3); }
 ;
 
 callargs:

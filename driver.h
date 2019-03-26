@@ -16,13 +16,13 @@ public:
     funtable(funtable),
     syntree(syntree)
     {}
-  const Node& createValNode(double val);
-  const Node& createVarNode(std::wstring name);
-  const Node& createExpNode(NodeExp::OpType opType, const Node& op1, const Node& op2);
-  const Node& createUnNode(NodeUn::OpType opType, const Node& op1);
-  const Node& createFunCallNode(std::wstring name, std::list<const Node*> args);
-  double compute(const Node& x);
-  std::list<SynTree::node_type> cleanSynTree(const Node& x);
+  const Node* createValNode(double val);
+  const Node* createVarNode(std::wstring name);
+  const Node* createExpNode(NodeExp::OpType opType, const Node* op1, const Node* op2);
+  const Node* createUnNode(NodeUn::OpType opType, const Node* op1);
+  const Node* createFunCallNode(std::wstring name, std::list<const Node*> args);
+  double compute(const Node* x);
+  std::list<SynTree::node_type> cleanSynTree(const Node* x);
   symt_t& symtable;
   funt_t& funtable;
   SynTree& syntree;

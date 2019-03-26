@@ -34,8 +34,8 @@ struct NodeExp {
     Add, Sub, Mul, Div
   };
   OpType opType;
-  const Node& op1;
-  const Node& op2;
+  const Node* op1;
+  const Node* op2;
 };
 
 struct NodeUn {
@@ -43,7 +43,7 @@ struct NodeUn {
     Neg
   };
   OpType opType;
-  const Node& op1;
+  const Node* op1;
 };
 
 bool operator==(const NodeExp& a, const NodeExp& b);
@@ -54,7 +54,7 @@ using SynTree = std::unordered_set<Node>;
 struct Function {
   using arglist_t = std::list<std::wstring>;
   arglist_t args;
-  const Node& body;
+  const Node* body;
 };
 
 std::size_t computeNodeHash(const Node &x);
