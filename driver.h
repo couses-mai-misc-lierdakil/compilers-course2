@@ -30,7 +30,7 @@ public:
           std::optional<const DriverState::symt_t *> symtable = std::nullopt);
   void cleanSynTree(const Node *x);
   DriverState &st;
-  double result;
+  std::optional<double> result = std::nullopt;
 };
 
 #endif
