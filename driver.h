@@ -28,7 +28,7 @@ public:
   double
   compute(const Node *x,
           std::optional<const DriverState::symt_t *> symtable = std::nullopt);
-  std::list<SynTree::node_type> cleanSynTree(const Node *x);
+  void cleanSynTree(const Node *x);
   DriverState &st;
   double result;
 };

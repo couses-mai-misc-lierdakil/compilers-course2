@@ -78,23 +78,43 @@ double Driver::compute(const Node *x,
       *x);
 }
 
-std::list<SynTree::node_type> Driver::cleanSynTree(const Node *x) {
-  std::list<SynTree::node_type> l;
-  std::visit(
-      [&l, this](auto &&arg) {
-        using T = std::decay_t<decltype(arg)>;
-        if constexpr (std::is_same_v<NodeExp, T>) {
-          l.splice(l.end(), cleanSynTree(arg.op1));
-          l.splice(l.end(), cleanSynTree(arg.op2));
-        } else if constexpr (std::is_same_v<NodeUn, T>) {
-          l.splice(l.end(), cleanSynTree(arg.op1));
-        } else if constexpr (std::is_same_v<NodeFunCall, T>) {
-          for (auto &i : arg.args) {
-            l.splice(l.end(), cleanSynTree(i));
-          }
-        }
-      },
-      *x);
-  l.push_back(st.syntree.extract(*x));
-  return l;
+struct RecTreeVis {
+  std::unordered_set<const SynTree::value_type*>& roots;
+  template<typename U>
+  void operator()(U&& arg) {
+    auto rec = RecTreeVis{roots};
+    using T = std::decay_t<decltype(arg)>;
+    if constexpr (std::is_same_v<NodeExp, T>) {
+      roots.insert(arg.op1);
+      std::visit(rec, *arg.op1);
+      roots.insert(arg.op2);
+      std::visit(rec, *arg.op2);
+    } else if constexpr (std::is_same_v<NodeUn, T>) {
+      roots.insert(arg.op1);
+      std::visit(rec, *arg.op1);
+    } else if constexpr (std::is_same_v<NodeFunCall, T>) {
+      for (auto &i : arg.args) {
+        roots.insert(i);
+        std::visit(rec, *i);
+      }
+    }
+  }
+};
+
+void Driver::cleanSynTree(const Node *x) {
+  std::unordered_set<const SynTree::value_type*> roots;
+  for (auto &i : st.funtable) {
+    roots.insert(i.second.body);
+    std::visit(RecTreeVis{roots}, *i.second.body);
+  }
+
+  std::list<const SynTree::value_type*> itemsToErase;
+  for (auto &i : st.syntree) {
+    if (roots.find(&i) == roots.end()) {
+      itemsToErase.push_back(&i);
+    }
+  }
+  for (auto &i : itemsToErase) {
+    st.syntree.erase(*i);
+  }
 }
