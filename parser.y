@@ -28,7 +28,6 @@
 %token Memstat "MEMSTAT"
 %token '(' ')' '+' '-' '*' '/' '=' ';'
 
-%left ';'
 %right '='
 %left '+' '-'
 %left '*' '/'
