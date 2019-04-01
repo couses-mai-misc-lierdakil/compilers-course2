@@ -20,13 +20,13 @@ int main(int argc, const char *argv[]) {
     in = new std::wifstream(args[0]);
     fileInput = true;
   }
-  try {
-    while (!std::getline(*in, line).eof()) {
-      if (fileInput)
-        std::wcerr << "Input: " << line << std::endl;
-      Driver drv(st, line);
-      yy::parser parser(drv);
-      // parser.set_debug_level(true);
+  while (!std::getline(*in, line).eof()) {
+    if (fileInput)
+      std::wcerr << "Input: " << line << std::endl;
+    Driver drv(st, line);
+    yy::parser parser(drv);
+    // parser.set_debug_level(true);
+    try {
       auto res = parser.parse();
       if (res != 0) {
         std::wcerr << L"Parser returned error " << res << std::endl;
@@ -34,9 +34,9 @@ int main(int argc, const char *argv[]) {
         if (drv.result)
           std::wcout << "Result is: " << drv.result.value() << std::endl;
       }
+    } catch (std::exception &e) {
+      std::wcerr << e.what() << std::endl;
     }
-  } catch (std::exception &e) {
-    std::wcerr << e.what() << std::endl;
   }
   if (fileInput) {
     delete in;

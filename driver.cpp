@@ -37,12 +37,83 @@ const Node *Driver::createCondNode(const Node *cond, const Node *ifTrue,
   return &*node.first;
 }
 
-double Driver::compute(const Node *x,
-                       std::optional<const DriverState::symt_t *> symtable) {
+CNodeVal operator+(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value + b.value, NodeValType::Num};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator-(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value - b.value, NodeValType::Num};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator*(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value * b.value, NodeValType::Num};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator/(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value / b.value, NodeValType::Num};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator-(const CNodeVal &a) {
+  if (a.valType == NodeValType::Num) {
+    return CNodeVal{-a.value, NodeValType::Num};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator>(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value > b.value ? 1.0 : 0.0, NodeValType::Bool};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator<(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value < b.value ? 1.0 : 0.0, NodeValType::Bool};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator>=(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value >= b.value ? 1.0 : 0.0, NodeValType::Bool};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator<=(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value <= b.value ? 1.0 : 0.0, NodeValType::Bool};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator==(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value == b.value ? 1.0 : 0.0, NodeValType::Bool};
+  } else if (a.valType == NodeValType::Bool && a.valType == NodeValType::Bool) {
+    return CNodeVal{a.value == b.value ? 1.0 : 0.0, NodeValType::Bool};
+  }
+  throw std::runtime_error("Type error");
+}
+CNodeVal operator!=(const CNodeVal &a, const CNodeVal &b) {
+  if (a.valType == NodeValType::Num && a.valType == NodeValType::Num) {
+    return CNodeVal{a.value != b.value ? 1.0 : 0.0, NodeValType::Bool};
+  } else if (a.valType == NodeValType::Bool && a.valType == NodeValType::Bool) {
+    return CNodeVal{a.value != b.value ? 1.0 : 0.0, NodeValType::Bool};
+  }
+  throw std::runtime_error("Type error");
+}
+
+CNodeVal Driver::compute(const Node *x,
+                         std::optional<const DriverState::symt_t *> symtable) {
   if (!symtable)
     symtable = &st.symtable;
   return std::visit(
-      [this, &symtable](auto &&arg) -> double {
+      [this, &symtable](auto &&arg) -> CNodeVal {
         using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<NodeExp, T>) {
           switch (arg.opType) {
@@ -55,40 +126,40 @@ double Driver::compute(const Node *x,
           case NodeExp::OpType::Div:
             return compute(arg.op1, symtable) / compute(arg.op2, symtable);
           case NodeExp::OpType::Lte:
-            return compute(arg.op1, symtable) <= compute(arg.op2, symtable) ? 1
-                                                                            : 0;
+            return compute(arg.op1, symtable) <= compute(arg.op2, symtable);
           case NodeExp::OpType::Gte:
-            return compute(arg.op1, symtable) >= compute(arg.op2, symtable) ? 1
-                                                                            : 0;
+            return compute(arg.op1, symtable) >= compute(arg.op2, symtable);
           case NodeExp::OpType::Lt:
-            return compute(arg.op1, symtable) < compute(arg.op2, symtable) ? 1
-                                                                           : 0;
+            return compute(arg.op1, symtable) < compute(arg.op2, symtable);
           case NodeExp::OpType::Gt:
-            return compute(arg.op1, symtable) > compute(arg.op2, symtable) ? 1
-                                                                           : 0;
+            return compute(arg.op1, symtable) > compute(arg.op2, symtable);
           case NodeExp::OpType::Eq:
-            return compute(arg.op1, symtable) == compute(arg.op2, symtable) ? 1
-                                                                            : 0;
+            return compute(arg.op1, symtable) == compute(arg.op2, symtable);
           case NodeExp::OpType::Neq:
-            return compute(arg.op1, symtable) != compute(arg.op2, symtable) ? 1
-                                                                            : 0;
+            return compute(arg.op1, symtable) != compute(arg.op2, symtable);
           default:
             throw new std::runtime_error("Unknown Exp::OpType");
           }
         } else if constexpr (std::is_same_v<NodeUn, T>) {
           if (arg.opType == NodeUn::OpType::Neg)
             return -compute(arg.op1, symtable);
-          else if (arg.opType == NodeUn::OpType::BNeg)
-            return compute(arg.op1, symtable) ? 0 : 1;
-          else
+          else if (arg.opType == NodeUn::OpType::BNeg) {
+            auto val = compute(arg.op1, symtable);
+            if (val.valType != NodeValType::Bool)
+              throw std::runtime_error("Type error");
+            return CNodeVal{compute(arg.op1, symtable).value == 1.0 ? 0.0 : 1.0,
+                            NodeValType::Bool};
+          } else
             throw new std::runtime_error("Unknown Un::OpType");
         } else if constexpr (std::is_same_v<NodeVal, T>) {
-          return arg.value;
+          return CNodeVal{arg.value, NodeValType::Num};
         } else if constexpr (std::is_same_v<NodeVar, T>) {
           return symtable.value()->at(arg.name);
         } else if constexpr (std::is_same_v<NodeCond, T>) {
           auto cond = compute(arg.cond, symtable);
-          if (cond == 0) {
+          if (cond.valType != NodeValType::Bool)
+            throw std::runtime_error("Type error");
+          if (cond.value == 0) {
             return compute(arg.ifFalse, symtable);
           } else {
             return compute(arg.ifTrue, symtable);
@@ -100,17 +171,26 @@ double Driver::compute(const Node *x,
               if (arg.args.size() != 1) {
                 throw new std::runtime_error("Argument number mismatch");
               }
-              return std::sqrt(compute(arg.args.front(), symtable));
+              auto val = compute(arg.args.front(), symtable);
+              if (val.valType != NodeValType::Num)
+                throw std::runtime_error("Type error");
+              return CNodeVal{std::sqrt(val.value), NodeValType::Num};
             } else if (arg.name == L"sin") {
               if (arg.args.size() != 1) {
                 throw new std::runtime_error("Argument number mismatch");
               }
-              return std::sin(compute(arg.args.front(), symtable));
+              auto val = compute(arg.args.front(), symtable);
+              if (val.valType != NodeValType::Num)
+                throw std::runtime_error("Type error");
+              return CNodeVal{std::sin(val.value), NodeValType::Num};
             } else if (arg.name == L"cos") {
               if (arg.args.size() != 1) {
                 throw new std::runtime_error("Argument number mismatch");
               }
-              return std::cos(compute(arg.args.front(), symtable));
+              auto val = compute(arg.args.front(), symtable);
+              if (val.valType != NodeValType::Num)
+                throw std::runtime_error("Type error");
+              return CNodeVal{std::cos(val.value), NodeValType::Num};
             } else {
               throw new std::runtime_error("Undefined function");
             }

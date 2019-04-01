@@ -44,12 +44,12 @@
 %precedence UNEG
 %%
 %start s;
-s: exp                  { drv.result = drv.compute($1); drv.cleanSynTree($1); }
+s: exp                  { drv.result = drv.compute($1).value; drv.cleanSynTree($1); }
 |  stmt
 
 stmt:
   Def Var '(' args ')' '=' exp
-                        { drv.st.funtable.emplace($2, Function{$4, $7}); }
+                        { drv.st.funtable[$2] = Function{$4, $7}; }
 | Var '=' exp           { drv.st.symtable[$1] = drv.compute($3); }
 | Memstat               { drv.printMemStat(); }
 

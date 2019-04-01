@@ -4,8 +4,13 @@
 #include "lex.yy.h"
 #include <type_traits>
 
+struct CNodeVal {
+  double value;
+  NodeValType valType;
+};
+
 struct DriverState {
-  using symt_t = std::map<std::wstring, double>;
+  using symt_t = std::map<std::wstring, CNodeVal>;
   using funt_t = std::map<std::wstring, Function>;
   symt_t symtable;
   funt_t funtable;
@@ -27,7 +32,7 @@ public:
                                 std::list<const Node *> args);
   const Node *createCondNode(const Node *cond, const Node *ifTrue,
                              const Node *ifFalse);
-  double
+  CNodeVal
   compute(const Node *x,
           std::optional<const DriverState::symt_t *> symtable = std::nullopt);
   void cleanSynTree(const Node *x);

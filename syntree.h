@@ -6,6 +6,8 @@
 #include <unordered_set>
 #include <variant>
 
+enum class NodeValType { Bool, Num };
+
 struct NodeVal {
   double value;
   bool operator==(const NodeVal &other) const;
