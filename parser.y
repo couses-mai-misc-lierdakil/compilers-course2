@@ -25,9 +25,13 @@
 %token <std::wstring> Num "number"
 %token <std::wstring> Var "identifier"
 %token Def "def"
+%token If "if"
+%token Then "then"
+%token Else "else"
 %token Memstat "MEMSTAT"
-%token '(' ')' '+' '-' '*' '/' '=' ';'
+%token '(' ')' '+' '-' '*' '/' '='
 
+%right If Then Else
 %right '='
 %left '+' '-'
 %left '*' '/'
@@ -56,6 +60,7 @@ exp:
 | '(' exp ')'           { $$ = $2; }
 | '-' exp %prec UNEG    { $$ = drv.createUnNode(NodeUn::OpType::Neg, $2); }
 | val                   { $$ = $1; }
+| If exp Then exp Else exp { $$ = drv.createCondNode($2, $4, $6); }
 ;
 
 val:

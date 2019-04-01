@@ -19,8 +19,10 @@ struct NodeVar {
 struct NodeFunCall;
 struct NodeExp;
 struct NodeUn;
+struct NodeCond;
 
-using Node = std::variant<NodeExp, NodeUn, NodeVal, NodeVar, NodeFunCall>;
+using Node =
+    std::variant<NodeExp, NodeUn, NodeVal, NodeVar, NodeFunCall, NodeCond>;
 
 struct NodeFunCall {
   std::wstring name;
@@ -42,8 +44,15 @@ struct NodeUn {
   const Node *op1;
 };
 
+struct NodeCond {
+  const Node *cond;
+  const Node *ifTrue;
+  const Node *ifFalse;
+};
+
 bool operator==(const NodeExp &a, const NodeExp &b);
 bool operator==(const NodeUn &a, const NodeUn &b);
+bool operator==(const NodeCond &a, const NodeCond &b);
 
 using SynTree = std::unordered_set<Node>;
 

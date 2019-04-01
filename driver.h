@@ -25,6 +25,8 @@ public:
   const Node *createUnNode(NodeUn::OpType opType, const Node *op1);
   const Node *createFunCallNode(std::wstring name,
                                 std::list<const Node *> args);
+  const Node *createCondNode(const Node *cond, const Node *ifTrue,
+                             const Node *ifFalse);
   double
   compute(const Node *x,
           std::optional<const DriverState::symt_t *> symtable = std::nullopt);

@@ -13,6 +13,10 @@ bool operator==(const NodeUn &a, const NodeUn &b) {
   return a.opType == b.opType && a.op1 == b.op1;
 }
 
+bool operator==(const NodeCond &a, const NodeCond &b) {
+  return a.cond == b.cond && a.ifTrue == b.ifTrue && a.ifFalse == b.ifFalse;
+}
+
 bool NodeVal::operator==(const NodeVal &other) const {
   return value == other.value;
 }
@@ -54,6 +58,8 @@ std::size_t computeNodeHash(const Node &x) {
           return hash_combine_calc(arg.name);
         } else if constexpr (is_t<NodeUn, T>) {
           return hash_combine_calc(arg.opType, arg.op1);
+        } else if constexpr (is_t<NodeCond, T>) {
+          return hash_combine_calc(arg.cond, arg.ifTrue, arg.ifFalse);
         } else if constexpr (is_t<NodeFunCall, T>) {
           auto h = hash_combine_calc(arg.name);
           for (auto const &i : arg.args) {

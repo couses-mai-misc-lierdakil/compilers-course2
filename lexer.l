@@ -10,6 +10,9 @@ num     [0-9]+([.][0-9]*)?([eE][+-]?[0-9]+)?
 
 %%
 
+if       return parser::token::If;
+then     return parser::token::Then;
+else     return parser::token::Else;
 def      return parser::token::Def;
 MEMSTAT  return parser::token::Memstat;
 {num}    yylval.emplace<std::wstring>(wstr()); return parser::token::Num;

@@ -31,6 +31,12 @@ const Node *Driver::createFunCallNode(std::wstring name,
   return &*node.first;
 }
 
+const Node *Driver::createCondNode(const Node *cond, const Node *ifTrue,
+                                   const Node *ifFalse) {
+  auto node = st.syntree.emplace(NodeCond{cond, ifTrue, ifFalse});
+  return &*node.first;
+}
+
 double Driver::compute(const Node *x,
                        std::optional<const DriverState::symt_t *> symtable) {
   if (!symtable)
@@ -60,6 +66,13 @@ double Driver::compute(const Node *x,
           return arg.value;
         } else if constexpr (std::is_same_v<NodeVar, T>) {
           return symtable.value()->at(arg.name);
+        } else if constexpr (std::is_same_v<NodeCond, T>) {
+          auto cond = compute(arg.cond, symtable);
+          if (cond == 0) {
+            return compute(arg.ifFalse, symtable);
+          } else {
+            return compute(arg.ifTrue, symtable);
+          }
         } else if constexpr (std::is_same_v<NodeFunCall, T>) {
           auto funit = st.funtable.find(arg.name);
           if (funit == st.funtable.end()) {
@@ -119,6 +132,13 @@ struct RecTreeVis {
         roots.insert(i);
         std::visit(rec, *i);
       }
+    } else if constexpr (std::is_same_v<NodeCond, T>) {
+      roots.insert(arg.cond);
+      std::visit(rec, *arg.cond);
+      roots.insert(arg.ifTrue);
+      std::visit(rec, *arg.ifTrue);
+      roots.insert(arg.ifFalse);
+      std::visit(rec, *arg.ifFalse);
     }
   }
 };
