@@ -1,5 +1,6 @@
 #include "driver.h"
 #include "utils.h"
+#include <cmath>
 #include <optional>
 #include <queue>
 
@@ -60,7 +61,28 @@ double Driver::compute(const Node *x,
         } else if constexpr (std::is_same_v<NodeVar, T>) {
           return symtable.value()->at(arg.name);
         } else if constexpr (std::is_same_v<NodeFunCall, T>) {
-          auto fun = st.funtable.at(arg.name);
+          auto funit = st.funtable.find(arg.name);
+          if (funit == st.funtable.end()) {
+            if (arg.name == L"sqrt") {
+              if (arg.args.size() != 1) {
+                throw new std::runtime_error("Argument number mismatch");
+              }
+              return std::sqrt(compute(arg.args.front(), symtable));
+            } else if (arg.name == L"sin") {
+              if (arg.args.size() != 1) {
+                throw new std::runtime_error("Argument number mismatch");
+              }
+              return std::sin(compute(arg.args.front(), symtable));
+            } else if (arg.name == L"cos") {
+              if (arg.args.size() != 1) {
+                throw new std::runtime_error("Argument number mismatch");
+              }
+              return std::cos(compute(arg.args.front(), symtable));
+            } else {
+              throw new std::runtime_error("Undefined function");
+            }
+          }
+          auto fun = funit->second;
           if (fun.args.size() != arg.args.size()) {
             throw new std::runtime_error("Argument number mismatch");
           }
