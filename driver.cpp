@@ -54,12 +54,32 @@ double Driver::compute(const Node *x,
             return compute(arg.op1, symtable) * compute(arg.op2, symtable);
           case NodeExp::OpType::Div:
             return compute(arg.op1, symtable) / compute(arg.op2, symtable);
+          case NodeExp::OpType::Lte:
+            return compute(arg.op1, symtable) <= compute(arg.op2, symtable) ? 1
+                                                                            : 0;
+          case NodeExp::OpType::Gte:
+            return compute(arg.op1, symtable) >= compute(arg.op2, symtable) ? 1
+                                                                            : 0;
+          case NodeExp::OpType::Lt:
+            return compute(arg.op1, symtable) < compute(arg.op2, symtable) ? 1
+                                                                           : 0;
+          case NodeExp::OpType::Gt:
+            return compute(arg.op1, symtable) > compute(arg.op2, symtable) ? 1
+                                                                           : 0;
+          case NodeExp::OpType::Eq:
+            return compute(arg.op1, symtable) == compute(arg.op2, symtable) ? 1
+                                                                            : 0;
+          case NodeExp::OpType::Neq:
+            return compute(arg.op1, symtable) != compute(arg.op2, symtable) ? 1
+                                                                            : 0;
           default:
             throw new std::runtime_error("Unknown Exp::OpType");
           }
         } else if constexpr (std::is_same_v<NodeUn, T>) {
           if (arg.opType == NodeUn::OpType::Neg)
             return -compute(arg.op1, symtable);
+          else if (arg.opType == NodeUn::OpType::BNeg)
+            return compute(arg.op1, symtable) ? 0 : 1;
           else
             throw new std::runtime_error("Unknown Un::OpType");
         } else if constexpr (std::is_same_v<NodeVal, T>) {

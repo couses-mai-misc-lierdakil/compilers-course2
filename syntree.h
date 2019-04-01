@@ -32,14 +32,14 @@ struct NodeFunCall {
 bool operator==(const NodeFunCall &a, const NodeFunCall &b);
 
 struct NodeExp {
-  enum class OpType { Add, Sub, Mul, Div };
+  enum class OpType { Add, Sub, Mul, Div, Eq, Lt, Lte, Gt, Gte, Neq };
   OpType opType;
   const Node *op1;
   const Node *op2;
 };
 
 struct NodeUn {
-  enum class OpType { Neg };
+  enum class OpType { Neg, BNeg };
   OpType opType;
   const Node *op1;
 };

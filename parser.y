@@ -29,10 +29,16 @@
 %token Then "then"
 %token Else "else"
 %token Memstat "MEMSTAT"
-%token '(' ')' '+' '-' '*' '/' '='
+%token Lte "<="
+%token Gte ">="
+%token Eq "=="
+%token Neq "!="
+%token '(' ')' '+' '-' '*' '/' '=' '<' '>' '~'
 
 %right If Then Else
 %right '='
+%left '<' '>' Lte Gte Eq Neq
+%precedence '~' BNEG
 %left '+' '-'
 %left '*' '/'
 %precedence UNEG
@@ -57,8 +63,15 @@ exp:
 | exp '-' exp           { $$ = drv.createExpNode(NodeExp::OpType::Sub, $1, $3); }
 | exp '*' exp           { $$ = drv.createExpNode(NodeExp::OpType::Mul, $1, $3); }
 | exp '/' exp           { $$ = drv.createExpNode(NodeExp::OpType::Div, $1, $3); }
+| exp '<' exp           { $$ = drv.createExpNode(NodeExp::OpType::Lt, $1, $3); }
+| exp '>' exp           { $$ = drv.createExpNode(NodeExp::OpType::Gt, $1, $3); }
+| exp Lte exp           { $$ = drv.createExpNode(NodeExp::OpType::Lte, $1, $3); }
+| exp Gte exp           { $$ = drv.createExpNode(NodeExp::OpType::Gte, $1, $3); }
+| exp Eq exp            { $$ = drv.createExpNode(NodeExp::OpType::Eq, $1, $3); }
+| exp Neq exp           { $$ = drv.createExpNode(NodeExp::OpType::Neq, $1, $3); }
 | '(' exp ')'           { $$ = $2; }
 | '-' exp %prec UNEG    { $$ = drv.createUnNode(NodeUn::OpType::Neg, $2); }
+| '~' exp %prec BNEG    { $$ = drv.createUnNode(NodeUn::OpType::BNeg, $2); }
 | val                   { $$ = $1; }
 | If exp Then exp Else exp { $$ = drv.createCondNode($2, $4, $6); }
 ;

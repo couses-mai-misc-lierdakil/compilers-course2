@@ -17,7 +17,11 @@ def      return parser::token::Def;
 MEMSTAT  return parser::token::Memstat;
 {num}    yylval.emplace<std::wstring>(wstr()); return parser::token::Num;
 {ident}  yylval.emplace<std::wstring>(wstr()); return parser::token::Var;
-[()+*/=\-] return chr();
+<=       return parser::token::Lte;
+>=       return parser::token::Gte;
+==       return parser::token::Eq;
+!=       return parser::token::Neq;
+[()+*/=<>~\-] return chr();
 [\p{Zs}] // ignore spaces
 .        return chr();
 
